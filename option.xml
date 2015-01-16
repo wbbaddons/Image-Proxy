@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data xmlns="http://www.woltlab.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.woltlab.com http://www.woltlab.com/XSD/maelstrom/option.xsd">
+	<import>
+		<categories>
+			<category name="message.general.proxy">
+				<parent>message.general</parent>
+			</category>
+		</categories>
+                
+		<options>
+			<option name="module_proxy">
+				<categoryname>module.content</categoryname>
+				<optiontype>boolean</optiontype>
+				<defaultvalue>1</defaultvalue>
+			</option>
+                        
+			<option name="proxy_store_time">
+				<categoryname>message.general.proxy</categoryname>
+				<optiontype>integer</optiontype>
+				<defaultvalue>7</defaultvalue>
+				<minvalue>1</minvalue>
+				<maxvalue>365</maxvalue>
+				<options>module_proxy</options>
+			</option>
+		</options>
+	</import>
+</data>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language xmlns="http://www.woltlab.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.woltlab.com http://www.woltlab.com/XSD/maelstrom/language.xsd" languagecode="de">
+	<category name="wcf.acp.option">
+		<item name="wcf.acp.option.module_proxy"><![CDATA[Image Proxy]]></item>
+		<item name="wcf.acp.option.module_proxy.description"><![CDATA[Saves external images temporarily in the WCF.]]></item>
+		
+		<item name="wcf.acp.option.proxy_store_time"><![CDATA[Storage time]]></item>
+		<item name="wcf.acp.option.proxy_store_time.description"><![CDATA[Time in days, in which the images are cached in the WCF.]]></item>
+		
+		<item name="wcf.acp.option.category.message.general.proxy"><![CDATA[Image Proxy]]></item>
+	</category>
+</language>
