@@ -15,8 +15,14 @@ class ProxyListener implements \wcf\system\event\IEventListener {
 			return;
 		}
 		
+                // match [img]link[/img]
 		preg_match_all('~\[img\](https?:\/\/[a-zA-Z0-9\.:@\-]*\.?[a-zA-Z0-9äüö\-]+\.[A-Za-z]{2,8}(:[0-9]{1,4})?(\/[^#\]]*)?(#[^#]+)?)\[\/img\]~i', $eventObj->message, $matches, PREG_SET_ORDER);
 		
+                // match [img=link]
+                preg_match_all('~\[img=(https?:\/\/[a-zA-Z0-9\.:@\-]*\.?[a-zA-Z0-9äüö\-]+\.[A-Za-z]{2,8}(:[0-9]{1,4})?(\/[^#\]]*)?(#[^#]+)?)\]~i', $eventObj->message, $matches2, PREG_SET_ORDER);
+                
+                $matches = array_merge($matches, $matches2);
+                
 		foreach ($matches as $match) {
 			if (function_exists('gethostbyname')) {
 				// is localhost? 
