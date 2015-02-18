@@ -21,7 +21,7 @@ class ImageProxyPage extends \wcf\page\AbstractPage {
 	
 	public $localimage = null;
 	
-	const NOT_FOUND_TEXT = ''; // Bob Kelso (Scrubs [Season 4 Episode 20])
+	const NOT_FOUND_TEXT = '';
 	
 	public static $validImageTypes = array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP);
 	
@@ -57,6 +57,9 @@ class ImageProxyPage extends \wcf\page\AbstractPage {
 	public function store() {
 		// first remove old cache image
 		$this->removeImage(); 
+		
+		// replace blanks with %20
+		$this->url = str_replace(' ', '%20', $this->url);
 		
 		try {
 			$proxy = new \wcf\util\HTTPRequest($this->url);
