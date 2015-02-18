@@ -46,7 +46,7 @@ class ProxyListener implements \wcf\system\event\IEventListener {
 					$localhost = true; 
 				}
 
-				if (!$localhost && !\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($match[0])) {
+				if (!$localhost && !\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($match[1])) {
 					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($match[0], '[img]' . $this->buildImageURL($match[1]) . "[/img]", $eventObj->message);
 				}
 			}
