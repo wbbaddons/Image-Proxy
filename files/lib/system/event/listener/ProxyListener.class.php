@@ -1,14 +1,21 @@
 <?php
 namespace wcf\system\event\listener; 
-
 use wcf\util\Signer; 
 
-class ProxyListener implements \wcf\system\event\IEventListener {
+/**
+ * Replace images with proxy images. 
+ * 
+ * @author	Joshua Rüsweg
+ * @copyright	2015 Joshua Rüsweg
+ * @license	GNU Lesser General Public License <http://opensource.org/licenses/lgpl-license.php>
+ * @package	be.bastelstu.josh.imageproxy
+ */
+class ProxyListener implements \wcf\system\event\listener\IParameterizedEventListener {
 	
 	/**
 	 * @see	\wcf\system\event\IEventListener::execute()
 	 */
-	public function execute($eventObj, $className, $eventName) {
+	public function execute($eventObj, $className, $eventName, array &$parameters) {
 		if (!MODULE_PROXY) return; 
 		
 		if (!$eventObj->message || \wcf\data\bbcode\BBCodeCache::getInstance()->getBBCodeByTag('img') === null) {
