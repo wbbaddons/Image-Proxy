@@ -1,8 +1,15 @@
 <?php
 namespace wcf\page; 
-
 use wcf\util\Signer; 
 
+/**
+ * Displays a proxied image. 
+ * 
+ * @author	Joshua Rüsweg
+ * @copyright	2015 Joshua Rüsweg
+ * @license	GNU Lesser General Public License <http://opensource.org/licenses/lgpl-license.php>
+ * @package	be.bastelstu.josh.imageproxy
+ */
 class ImageProxyPage extends \wcf\page\AbstractPage {
 	
 	/**
@@ -15,14 +22,31 @@ class ImageProxyPage extends \wcf\page\AbstractPage {
 	 */
 	public $neededModules = array('MODULE_PROXY');
 	
+	/**
+	 * The image url. 
+	 * 
+	 * @var String 
+	 */
 	public $url = null; 
 	
-	public $imageHash = null; 
+	/**
+	 * The signed image hash from the url. 
+	 * 
+	 * @var String 
+	 */
+	public $imageHash = null;
 	
-	public $localimage = null;
-	
+	/**
+	 * If this text is in the file, the proxy displays a "NOT FOUND" message. 
+	 * @var String
+	 */
 	const NOT_FOUND_TEXT = '';
 	
+	/**
+	 * Valid image types. 
+	 * 
+	 * @var array<Integer> 
+	 */
 	public static $validImageTypes = array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP);
 	
 	/**
@@ -52,7 +76,7 @@ class ImageProxyPage extends \wcf\page\AbstractPage {
 	}
 	
 	/**
-	 * store the image
+	 * Stores the image on our space. 
 	 */
 	public function store() {
 		// first remove old cache image
@@ -87,7 +111,8 @@ class ImageProxyPage extends \wcf\page\AbstractPage {
 	}
 	
 	/**
-	 * Is the file already stored? 
+	 * Returns true if the image is stored and not outdated. 
+	 * 
 	 * @return boolean
 	 */
 	public function isStored() {
@@ -98,12 +123,18 @@ class ImageProxyPage extends \wcf\page\AbstractPage {
 		return false; 
 	}
 	
+	/**
+	 * Returns the local dir for the image. 
+	 * 
+	 * @return String
+	 */
 	public function getLocalPath() {
 		return WCF_DIR . 'images/proxy/' . substr(md5($this->url), 0, 2) . '/'; 
 	}
 	
 	/**
-	 * get the local link
+	 * Returns the local image link. 
+	 * 
 	 * @return String
 	 */
 	public function getLocalLink() {
@@ -111,7 +142,7 @@ class ImageProxyPage extends \wcf\page\AbstractPage {
 	}
 	
 	/**
-	 * remove the image
+	 * Removes the image. 
 	 */
 	public function removeImage() {
 		if (file_exists($this->getLocalLink())) {
