@@ -22,18 +22,27 @@ class ProxyListener implements \wcf\system\event\listener\IParameterizedEventLis
 			return;
 		}
 		
-                // match [img]link[/img]
-		preg_match_all('~\[img\](https?:\/\/[a-zA-Z0-9\.:@\-]*\.?[a-zA-Z0-9äüö\-]+\.[A-Za-z]{2,8}(:[0-9]{1,4})?(\/[^#\]]*)?(#[^#]+)?)\[\/img\]~i', $eventObj->message, $matches, PREG_SET_ORDER);
-		
-                // match [img=link]
-                preg_match_all('~\[img=(https?:\/\/[a-zA-Z0-9\.:@\-]*\.?[a-zA-Z0-9äüö\-]+\.[A-Za-z]{2,8}(:[0-9]{1,4})?(\/[^#\]]*)?(#[^#]+)?)\]~i', $eventObj->message, $matches2, PREG_SET_ORDER);
-                
-                $matches = array_merge($matches, $matches2);
-                
+		// match [img]link[/img]
+		preg_match_all('~\[img\]([^\]]*)\[\/img\]~i', $eventObj->message, $matches, PREG_SET_ORDER);
+
+		// match all [img=link,(left|right|center)]
+		preg_match_all("~\[img=\'([^\]]*)\',(left|right|center)\]\[\/img\]~i", $eventObj->message, $matches2, PREG_SET_ORDER);
+
+		// match [img=link]
+		preg_match_all("~\[img=\'?([^\,\]]*)\'?\]~i", $eventObj->message, $matches3, PREG_SET_ORDER);
+
+		$matches = array_merge($matches, $matches2, $matches3);
+
 		foreach ($matches as $match) {
 			if (function_exists('gethostbyname')) {
 				// is localhost? 
 				$url = parse_url($match[1]);
+
+				if ($url === false) {
+					// url isn't a url
+					continue;
+				}
+
 				$host = @gethostbyname($url['host']); 
 				$localhost = false; 
 
@@ -54,7 +63,7 @@ class ProxyListener implements \wcf\system\event\listener\IParameterizedEventLis
 				}
 
 				if (!$localhost && !\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($match[1])) {
-					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($match[0], '[img]' . $this->buildImageURL($match[1]) . "[/img]", $eventObj->message);
+					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($match[0], '[img=\''. $this->buildImageURL($match[1]) .'\''. ((isset($match[2])) ? ','.$match[2] : '') .'][/img]', $eventObj->message);
 				}
 			}
 		}
