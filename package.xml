@@ -4,9 +4,9 @@
 		<packagename>ImageProxy</packagename>
 		<packagedescription><![CDATA[This plugin saves external images temporarily in the WCF.]]></packagedescription>
 		<packagedescription language="de"><![CDATA[Dieses Plugin speichert externe Bilder temporär im WCF.]]></packagedescription>
-		<version>1.1.0</version>
-		<date>2015-02-26</date>
-                <license><![CDATA[GNU Lesser General Public License <https://www.gnu.org/licenses/lgpl-3.0.txt>]]></license>
+		<version>1.1.1</version>
+		<date>2015-08-11</date>
+		<license><![CDATA[GNU Lesser General Public License <https://www.gnu.org/licenses/lgpl-3.0.txt>]]></license>
 	</packageinformation>
 
 	<authorinformation>
@@ -16,7 +16,7 @@
         
 	<requiredpackages>
 		<requiredpackage minversion="2.1.0 Alpha 1">com.woltlab.wcf</requiredpackage>
-                <requiredpackage minversion="1.0.0" file="requirements/be.bastelstu.wcf.signer.tar">be.bastelstu.wcf.signer</requiredpackage>
+		<requiredpackage minversion="1.0.0" file="requirements/be.bastelstu.wcf.signer.tar">be.bastelstu.wcf.signer</requiredpackage>
 	</requiredpackages>
 	
 	<excludedpackages>
@@ -32,7 +32,7 @@
 		<instruction type="eventListener">eventListener.xml</instruction>
 	</instructions>
         
-        <instructions type="update" fromversion="1.0.3">
+	<instructions type="update" fromversion="1.1.0">
 		<instruction type="file">files.tar</instruction>
 	</instructions>
 </package>
