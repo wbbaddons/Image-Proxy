@@ -56,6 +56,11 @@ class ProxyListener implements \wcf\system\event\listener\IParameterizedEventLis
 				if (!$localhost && !\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($img['attributes'][0])) {
 					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($img['match'], '[img=\''. $this->buildImageURL($img['attributes'][0]) .'\''. ((isset($img['attributes'][1])) ? ','.$img['attributes'][1] .((isset($img['attributes'][2])) ? ','.$img['attributes'][2] : ''): '') .'][/img]', $eventObj->message);
 				}
+				else if(\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($img['attributes'][0]) && $url['scheme']=='http' && \wcf\system\request\RouteHandler::secureConnection()){
+					$protocolRegex = new \wcf\system\regex('^http(?=://)');
+					$img['attributes'][0] =$protocolRegex->replace($img['attributes'][0], 'https');
+					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($img['match'], '[img=\''. $img['attributes'][0] .'\''. ((isset($img['attributes'][1])) ? ','.$img['attributes'][1] .((isset($img['attributes'][2])) ? ','.$img['attributes'][2] : ''): '') .'][/img]', $eventObj->message);
+				}
 			}
 		}
 	}
