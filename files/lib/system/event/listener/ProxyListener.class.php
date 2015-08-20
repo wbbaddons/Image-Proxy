@@ -56,7 +56,7 @@ class ProxyListener implements \wcf\system\event\listener\IParameterizedEventLis
 				if (!$localhost && !\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($img['attributes'][0])) {
 					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($img['match'], '[img=\''. $this->buildImageURL($img['attributes'][0]) .'\''. ((isset($img['attributes'][1])) ? ','.$img['attributes'][1] .((isset($img['attributes'][2])) ? ','.$img['attributes'][2] : ''): '') .'][/img]', $eventObj->message);
 				}
-				else if(\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($img['attributes'][0]) && $url['scheme']=='http' && \wcf\system\request\RouteHandler::secureConnection()){
+				else if(\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($img['attributes'][0]) && isset($url['scheme']) && $url['scheme'] == 'http' && \wcf\system\request\RouteHandler::secureConnection()){
 					$protocolRegex = new \wcf\system\regex('^http(?=://)');
 					$img['attributes'][0] = $protocolRegex->replace($img['attributes'][0], 'https');
 					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($img['match'], '[img=\''. $img['attributes'][0] .'\''. ((isset($img['attributes'][1])) ? ','.$img['attributes'][1] .((isset($img['attributes'][2])) ? ','.$img['attributes'][2] : ''): '') .'][/img]', $eventObj->message);
@@ -83,16 +83,18 @@ class ProxyListener implements \wcf\system\event\listener\IParameterizedEventLis
 			)?)\]~ix';
 		
 		// get bbcode tags
-		preg_match_all($pattern, $text, $imgList, PREG_OFFSET_CAPTURE);
+		preg_match_all($pattern, $text, $imgList);
+		
+		$textArray = preg_split($pattern, $text);
 		
 		$imgArray = array();
 		
 		foreach($imgList[0] as $num => $data){
 			$img = array();
 			//ignore closing tags
-			if (mb_substr($data[0], 1, 1) != '/') {
+			if (mb_substr($data, 1, 1) != '/') {
 				// split tag and attributes
-				preg_match("!^\[([a-z0-9]+)=?(.*)]$!si", $data[0], $imgData);
+				preg_match("!^\[([a-z0-9]+)=?(.*)]$!si", $data, $imgData);
 				$img['name'] = mb_strtolower($imgData[1]);
 				
 				// build attributes
@@ -111,19 +113,15 @@ class ProxyListener implements \wcf\system\event\listener\IParameterizedEventLis
 					$img['attributes'] = $attributes[1];
 				}
 				
-				$img['match'] = $data[0];
+				$img['match'] = $data;
 				
 				// check next tag for closing tag...
-				if(isset($imgList[0][$num+1]) && mb_substr($imgList[0][$num+1][0], 1, 1) == '/'){
-					$start = $imgList[0][$num][1];
-					$length = $imgList[0][$num+1][1]+strlen($imgList[0][$num+1][0])-$start;
-					$img['match'] = mb_substr($text,$start,$length);
+				if(isset($imgList[0][$num+1]) && mb_substr($imgList[0][$num+1], 1, 1) == '/'){
+					$img['match'] = $imgList[0][$num].$textArray[$num+1].$imgList[0][$num+1];
 					
 					//if no attribute found use content of the tags instead
 					if(!isset($img['attributes']) || count($img['attributes'])==0){
-						$start = $imgList[0][$num][1]+strlen($imgList[0][$num][0]);
-						$length = $imgList[0][$num+1][1]-$start;
-						$img['attributes'][0] = mb_substr($text,$start,$length);
+						$img['attributes'][0] = $textArray[$num+1];
 					}
 				}
 				if(isset($img['attributes']) && !empty($img['attributes'])){
