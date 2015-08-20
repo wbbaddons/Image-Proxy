@@ -22,21 +22,12 @@ class ProxyListener implements \wcf\system\event\listener\IParameterizedEventLis
 			return;
 		}
 		
-		// match [img]link[/img]
-		preg_match_all('~\[img\]([^\]]*)\[\/img\]~i', $eventObj->message, $matches, PREG_SET_ORDER);
-
-		// match all [img=link,(left|right|center)]
-		preg_match_all("~\[img=\'([^\]]*)\',(left|right|center)\]\[\/img\]~i", $eventObj->message, $matches2, PREG_SET_ORDER);
-
-		// match [img=link]
-		preg_match_all("~\[img=\'?([^\,\]]*)\'?\]~i", $eventObj->message, $matches3, PREG_SET_ORDER);
-
-		$matches = array_merge($matches, $matches2, $matches3);
-
-		foreach ($matches as $match) {
+		$imgs = $this->getImgTags($eventObj->message);
+		
+		foreach ($imgs as $img) {
 			if (function_exists('gethostbyname')) {
 				// is localhost? 
-				$url = parse_url($match[1]);
+				$url = parse_url($img['attributes'][0]);
 
 				if ($url === false) {
 					// url isn't a url
@@ -62,11 +53,83 @@ class ProxyListener implements \wcf\system\event\listener\IParameterizedEventLis
 					$localhost = true; 
 				}
 
-				if (!$localhost && !\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($match[1])) {
-					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($match[0], '[img=\''. $this->buildImageURL($match[1]) .'\''. ((isset($match[2])) ? ','.$match[2] : '') .'][/img]', $eventObj->message);
+				if (!$localhost && !\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($img['attributes'][0])) {
+					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($img['match'], '[img=\''. $this->buildImageURL($img['attributes'][0]) .'\''. ((isset($img['attributes'][1])) ? ','.$img['attributes'][1] .((isset($img['attributes'][2])) ? ','.$img['attributes'][2] : ''): '') .'][/img]', $eventObj->message);
+				}
+				else if(\wcf\system\application\ApplicationHandler::getInstance()->isInternalURL($img['attributes'][0]) && isset($url['scheme']) && $url['scheme'] == 'http' && \wcf\system\request\RouteHandler::secureConnection()){
+					$protocolRegex = new \wcf\system\regex('^http(?=://)');
+					$img['attributes'][0] = $protocolRegex->replace($img['attributes'][0], 'https');
+					$eventObj->message = \wcf\util\StringUtil::replaceIgnoreCase($img['match'], '[img=\''. $img['attributes'][0] .'\''. ((isset($img['attributes'][1])) ? ','.$img['attributes'][1] .((isset($img['attributes'][2])) ? ','.$img['attributes'][2] : ''): '') .'][/img]', $eventObj->message);
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Returns all img-bbcodes inside a given text. 
+	 * 
+	 * @author	Sebastian Zimmer
+	 * @based on	wcf/lib/system/bbcode/BBCodeParser
+	 *
+	 * @param	string	$text
+	 * @return	array
+	 */
+	
+	public function getImgTags($text){
+		$pattern = '~\[(?:/(?:img)|(?:img)
+			(?:=
+				(?:\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'|[^,\]]*)
+				(?:,(?:\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'|[^,\]]*))*
+			)?)\]~ix';
+		
+		// get bbcode tags
+		preg_match_all($pattern, $text, $imgList);
+		
+		$textArray = preg_split($pattern, $text);
+		
+		$imgArray = array();
+		
+		foreach($imgList[0] as $num => $data){
+			$img = array();
+			//ignore closing tags
+			if (mb_substr($data, 1, 1) != '/') {
+				// split tag and attributes
+				preg_match("!^\[([a-z0-9]+)=?(.*)]$!si", $data, $imgData);
+				$img['name'] = mb_strtolower($imgData[1]);
+				
+				// build attributes
+				if (!empty($imgData[2])) {
+					preg_match_all("~(?:^|,)('[^'\\\\]*(?:\\\\.[^'\\\\]*)*'|[^,]*)~", $imgData[2], $attributes);
+					
+					// remove quotes
+					for ($i = 0, $j = count($attributes[1]); $i < $j; $i++) {
+						if (mb_substr($attributes[1][$i], 0, 1) == "'" && mb_substr($attributes[1][$i], -1) == "'") {
+							$attributes[1][$i] = str_replace("\'", "'", $attributes[1][$i]);
+							$attributes[1][$i] = str_replace("\\\\", "\\", $attributes[1][$i]);
+							
+							$attributes[1][$i] = mb_substr($attributes[1][$i], 1, -1);
+						}
+					}
+					$img['attributes'] = $attributes[1];
+				}
+				
+				$img['match'] = $data;
+				
+				// check next tag for closing tag...
+				if(isset($imgList[0][$num+1]) && mb_substr($imgList[0][$num+1], 1, 1) == '/'){
+					$img['match'] = $imgList[0][$num].$textArray[$num+1].$imgList[0][$num+1];
+					
+					//if no attribute found use content of the tags instead
+					if(!isset($img['attributes']) || count($img['attributes'])==0){
+						$img['attributes'][0] = $textArray[$num+1];
+					}
+				}
+				if(isset($img['attributes']) && !empty($img['attributes'])){
+					$imgArray[] = $img;
+				}
+			}
+		}
+		return $imgArray;
 	}
 	
 	public static function buildImageURL($url) {
