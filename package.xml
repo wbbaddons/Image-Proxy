@@ -4,8 +4,8 @@
 		<packagename>ImageProxy</packagename>
 		<packagedescription><![CDATA[This plugin saves external images temporarily in the WCF.]]></packagedescription>
 		<packagedescription language="de"><![CDATA[Dieses Plugin speichert externe Bilder temporär im WCF.]]></packagedescription>
-		<version>1.1.1</version>
-		<date>2015-08-11</date>
+		<version>1.1.2</version>
+		<date>2015-09-06</date>
 		<license><![CDATA[GNU Lesser General Public License <https://www.gnu.org/licenses/lgpl-3.0.txt>]]></license>
 	</packageinformation>
 
@@ -32,7 +32,7 @@
 		<instruction type="eventListener">eventListener.xml</instruction>
 	</instructions>
         
-	<instructions type="update" fromversion="1.1.0">
+	<instructions type="update" fromversion="1.1.1">
 		<instruction type="file">files.tar</instruction>
 	</instructions>
 </package>
