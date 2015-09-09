@@ -25,11 +25,11 @@ class ProxyListener implements \wcf\system\event\listener\IParameterizedEventLis
 		// match [img]link[/img]
 		preg_match_all('~\[img\]([^\]]*)\[\/img\]~i', $eventObj->message, $matches, PREG_SET_ORDER);
 		
-		// match all [img=link,(left|right|center),[0-9]+]
-		preg_match_all("~\[img=\'([^\]]*)\',(left|right|center),([0-9]+)\]\[\/img\]~i", $eventObj->message, $matches2, PREG_SET_ORDER);
+		// match all [img=link,(none|left|right|center),[0-9]+]
+		preg_match_all("~\[img=\'([^\]]*)\',(none|left|right|center),([0-9]+)\]\[\/img\]~i", $eventObj->message, $matches2, PREG_SET_ORDER);
 		
-		// match all [img=link,(left|right|center)]
-		preg_match_all("~\[img=\'([^\]]*)\',(left|right|center)\]\[\/img\]~i", $eventObj->message, $matches3, PREG_SET_ORDER);
+		// match all [img=link,(none|left|right|center)]
+		preg_match_all("~\[img=\'([^\]]*)\',(none|left|right|center)\]\[\/img\]~i", $eventObj->message, $matches3, PREG_SET_ORDER);
 
 		// match [img=link]
 		preg_match_all("~\[img=\'?([^\,\]]*)\'?\]~i", $eventObj->message, $matches4, PREG_SET_ORDER);
