@@ -4,8 +4,8 @@
 		<packagename>ImageProxy</packagename>
 		<packagedescription><![CDATA[This plugin saves external images temporarily in the WCF.]]></packagedescription>
 		<packagedescription language="de"><![CDATA[Dieses Plugin speichert externe Bilder temporär im WCF.]]></packagedescription>
-		<version>1.1.2</version>
-		<date>2015-09-06</date>
+		<version>1.1.3</version>
+		<date>2016-11-21</date>
 		<license><![CDATA[GNU Lesser General Public License <https://www.gnu.org/licenses/lgpl-3.0.txt>]]></license>
 	</packageinformation>
 
@@ -21,7 +21,7 @@
 	
 	<excludedpackages>
 		<!-- @see https://community.woltlab.com/thread/230602-image-proxy/ -->
-		<excludedpackage version="2.2.0 Alpha 1">com.woltlab.wcf</excludedpackage>
+		<excludedpackage version="3.0.0 Alpha 1">com.woltlab.wcf</excludedpackage>
 	</excludedpackages>
 	
 	<instructions type="install">
@@ -32,7 +32,7 @@
 		<instruction type="eventListener">eventListener.xml</instruction>
 	</instructions>
         
-	<instructions type="update" fromversion="1.1.1">
+	<instructions type="update" fromversion="1.1.2">
 		<instruction type="file">files.tar</instruction>
 	</instructions>
 </package>
