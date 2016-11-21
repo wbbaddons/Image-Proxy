@@ -1,5 +1,6 @@
 <?php
 namespace wcf\page; 
+use wcf\system\event\EventHandler;
 use wcf\util\Signer; 
 
 /**
@@ -108,6 +109,7 @@ class ImageProxyPage extends \wcf\page\AbstractPage {
 		if (@file_put_contents($this->getLocalLink(), $imagestring) === false) {
 			throw new \wcf\system\exception\SystemException('cannot store proxyimage');
 		}
+		EventHandler::getInstance()->fireAction($this, 'imageStored');
 	}
 	
 	/**
